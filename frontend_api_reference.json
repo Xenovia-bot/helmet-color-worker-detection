@@ -1,0 +1,310 @@
+{
+  "_meta": {
+    "description": "Construction Safety Detection API — frontend reference",
+    "base_url": "http://localhost:8000",
+    "api_prefix": "/api/v1",
+    "docs_ui": "http://localhost:8000/docs",
+    "cors": {
+      "allowed_origins": ["*"],
+      "allowed_methods": ["*"],
+      "allowed_headers": ["*"],
+      "allow_credentials": true
+    }
+  },
+
+  "endpoints": {
+    "root": {
+      "method": "GET",
+      "path": "/",
+      "auth": false,
+      "response": {
+        "name": "string",
+        "version": "string",
+        "docs": "string"
+      },
+      "example_response": {
+        "name": "Construction Safety Detection",
+        "version": "1.0.0",
+        "docs": "/docs"
+      }
+    },
+
+    "health": {
+      "method": "GET",
+      "path": "/api/v1/health",
+      "auth": false,
+      "response": {
+        "status": "string",
+        "timestamp": "ISO-8601 string",
+        "service": "string"
+      },
+      "example_response": {
+        "status": "healthy",
+        "timestamp": "2026-04-26T20:00:00.000000",
+        "service": "construction-safety-detection"
+      }
+    },
+
+    "ready": {
+      "method": "GET",
+      "path": "/api/v1/ready",
+      "auth": false,
+      "response": {
+        "status": "string",
+        "timestamp": "ISO-8601 string",
+        "service": "string"
+      }
+    },
+
+    "process_image": {
+      "method": "POST",
+      "path": "/api/v1/process-image",
+      "auth": false,
+      "request": {
+        "content_type": "multipart/form-data",
+        "field": "file",
+        "accepted_mime_types": ["image/png", "image/jpeg", "image/webp"],
+        "accepted_extensions": ["png", "jpg", "jpeg", "webp"],
+        "max_file_size_mb": 100
+      },
+      "response_model": "ProcessingResponse",
+      "http_errors": {
+        "400": "Unsupported file format",
+        "413": "File exceeds size limit",
+        "500": "Detection or processing error"
+      },
+      "example_request_js": "const fd = new FormData(); fd.append('file', fileInput.files[0]); fetch('/api/v1/process-image', { method: 'POST', body: fd })",
+      "example_response_success": {
+        "request_id": "550e8400-e29b-41d4-a716-446655440000",
+        "status": "success",
+        "results": {
+          "people_detected": 2,
+          "violations": [],
+          "processing_time": 0.312
+        },
+        "message": null
+      },
+      "example_response_warning": {
+        "request_id": "ee4492f6-a6a4-490d-bdba-f568053a1462",
+        "status": "warning",
+        "results": {
+          "people_detected": 2,
+          "violations": [
+            {
+              "person_id": 1,
+              "missing_equipment": ["helmet", "vest"],
+              "bbox": [45.7, 131.4, 19.1, 44.0],
+              "confidence": 0.624
+            }
+          ],
+          "processing_time": 0.937
+        },
+        "message": null
+      },
+      "example_response_error": {
+        "request_id": "abc123",
+        "status": "error",
+        "results": null,
+        "message": "Image conversion failed: cannot identify image file"
+      }
+    },
+
+    "process_video": {
+      "method": "POST",
+      "path": "/api/v1/process-video",
+      "auth": false,
+      "request": {
+        "content_type": "multipart/form-data",
+        "field": "file",
+        "accepted_mime_types": ["video/mp4"],
+        "accepted_extensions": ["mp4"],
+        "max_file_size_mb": 500
+      },
+      "response_model": "VideoProcessingResponse",
+      "notes": [
+        "Frames are sampled at VIDEO_FRAME_SAMPLE_INTERVAL (default 1 second) to minimise device load",
+        "Only frames containing violations are included in violation_frames",
+        "frames_analyzed = total number of frames that were processed",
+        "Processing is synchronous and sequential — response arrives after full video is scanned"
+      ],
+      "http_errors": {
+        "400": "Unsupported file format",
+        "413": "File exceeds size limit",
+        "500": "Detection or processing error"
+      },
+      "example_response_success": {
+        "request_id": "f1a2b3c4-0000-0000-0000-000000000000",
+        "status": "success",
+        "results": {
+          "frames_analyzed": 42,
+          "total_violations": 0,
+          "violation_frames": [],
+          "processing_time": 38.5
+        },
+        "message": null
+      },
+      "example_response_warning": {
+        "request_id": "f1a2b3c4-1111-1111-1111-111111111111",
+        "status": "warning",
+        "results": {
+          "frames_analyzed": 42,
+          "total_violations": 3,
+          "violation_frames": [
+            {
+              "frame_index": 25,
+              "timestamp_seconds": 1.0,
+              "people_detected": 2,
+              "violations": [
+                {
+                  "person_id": 1,
+                  "missing_equipment": ["helmet"],
+                  "bbox": [100.0, 80.0, 60.0, 140.0],
+                  "confidence": 0.88
+                }
+              ]
+            },
+            {
+              "frame_index": 50,
+              "timestamp_seconds": 2.0,
+              "people_detected": 3,
+              "violations": [
+                {
+                  "person_id": 2,
+                  "missing_equipment": ["vest"],
+                  "bbox": [200.0, 90.0, 55.0, 130.0],
+                  "confidence": 0.76
+                },
+                {
+                  "person_id": 3,
+                  "missing_equipment": ["helmet", "vest"],
+                  "bbox": [310.0, 100.0, 50.0, 120.0],
+                  "confidence": 0.71
+                }
+              ]
+            }
+          ],
+          "processing_time": 41.2
+        },
+        "message": null
+      }
+    }
+  },
+
+  "response_models": {
+    "ProcessingResponse": {
+      "request_id": "string — UUID v4",
+      "status": "string — 'success' | 'warning' | 'error'",
+      "results": "ProcessingResult | null — null only when status is 'error'",
+      "message": "string | null — populated only when status is 'error'"
+    },
+    "ProcessingResult": {
+      "people_detected": "integer >= 0",
+      "violations": "Violation[]",
+      "processing_time": "float — seconds, rounded to 3 decimals"
+    },
+    "VideoProcessingResponse": {
+      "request_id": "string — UUID v4",
+      "status": "string — 'success' | 'warning' | 'error'",
+      "results": "VideoProcessingResult | null — null only when status is 'error'",
+      "message": "string | null — populated only when status is 'error'"
+    },
+    "VideoProcessingResult": {
+      "frames_analyzed": "integer — number of frames sampled and processed",
+      "total_violations": "integer — sum of all violations across all frames",
+      "violation_frames": "FrameViolation[] — only frames that had at least one violation",
+      "processing_time": "float — seconds, rounded to 3 decimals"
+    },
+    "FrameViolation": {
+      "frame_index": "integer — absolute frame number in the video",
+      "timestamp_seconds": "float — frame position in seconds, rounded to 2 decimals",
+      "people_detected": "integer — people found in this frame",
+      "violations": "Violation[]"
+    },
+    "Violation": {
+      "person_id": "integer — 1-based index within the frame",
+      "missing_equipment": "string[] — subset of configured required equipment",
+      "bbox": "[x, y, width, height] — absolute pixel coordinates",
+      "confidence": "float 0.0–1.0 — person detection confidence score"
+    }
+  },
+
+  "status_values": {
+    "success": "All detected people have required equipment",
+    "warning": "At least one person is missing required equipment",
+    "error": "Processing failed; check message field"
+  },
+
+  "equipment_types": {
+    "possible_values": ["helmet", "vest", "blue helmet", "red helmet", "white helmet", "yellow helmet"],
+    "default_required": ["helmet", "vest"],
+    "note": "missing_equipment array will only contain values from the server's REQUIRED_EQUIPMENT setting"
+  },
+
+  "bbox_format": {
+    "format": "[x, y, width, height]",
+    "units": "absolute pixels",
+    "origin": "top-left corner of the image/frame",
+    "note": "x,y is the top-left corner of the bounding box"
+  },
+
+  "backend_settings": {
+    "MODEL_CONFIDENCE_THRESHOLD": {
+      "default": 0.5,
+      "description": "Minimum YOLO confidence to include any detection"
+    },
+    "MIN_PERSON_ANALYSIS_CONFIDENCE": {
+      "default": 0.65,
+      "description": "Minimum person detection confidence to include that person in safety analysis — prevents false violations for small/distant figures"
+    },
+    "MIN_EQUIPMENT_DETECTION_CONFIDENCE": {
+      "default": 0.25,
+      "description": "Lower threshold applied to equipment detections (helmet, vest) — allows catching equipment with lower visibility"
+    },
+    "PROXIMITY_THRESHOLD": {
+      "default": 0.8,
+      "description": "Multiplier on person bounding-box height to define the search radius for nearby equipment"
+    },
+    "VIDEO_FRAME_SAMPLE_INTERVAL": {
+      "default": 1.0,
+      "unit": "seconds",
+      "description": "How many seconds between sampled frames in video processing"
+    },
+    "MAX_FILE_SIZE_MB": {
+      "default": 100,
+      "description": "Maximum upload size for images"
+    },
+    "MAX_VIDEO_SIZE_MB": {
+      "default": 500,
+      "description": "Maximum upload size for videos"
+    },
+    "REQUIRED_EQUIPMENT": {
+      "default": "helmet,vest",
+      "description": "Comma-separated list of equipment types every person must have"
+    },
+    "CORS_ALLOWED_ORIGINS": {
+      "default": ["*"],
+      "description": "No CORS restriction by default"
+    }
+  },
+
+  "frontend_tips": {
+    "file_validation": {
+      "image_types": ["image/png", "image/jpeg", "image/webp"],
+      "video_types": ["video/mp4"],
+      "check_file_type_before_upload": true
+    },
+    "status_to_ui": {
+      "success": { "color": "#155724", "background": "#d4edda", "icon": "✓" },
+      "warning": { "color": "#856404", "background": "#fff3cd", "icon": "⚠" },
+      "error":   { "color": "#721c24", "background": "#f8d7da", "icon": "✗" }
+    },
+    "video_ux_notes": [
+      "Video processing is slow (sequential, 1fps sampling) — show a persistent loading state",
+      "violation_frames is empty array (not null) when there are no violations",
+      "timestamp_seconds can be used to seek the video player: videoEl.currentTime = frame.timestamp_seconds",
+      "frame_index is useful for debugging but timestamp_seconds is better for display"
+    ],
+    "confidence_display": "Multiply by 100 and toFixed(1) for percentage display",
+    "bbox_drawing": "bbox = [x, y, w, h] in absolute pixels — scale to canvas/display size as needed"
+  }
+}

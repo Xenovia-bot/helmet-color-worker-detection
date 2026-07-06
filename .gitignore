@@ -1,0 +1,29 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+
+# Model dosyaları (büyük binary)
+*.pt
+*.pth
+*.onnx
+*.h5
+*.weights
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Ortam değişkenleri
+.env
+.env.local

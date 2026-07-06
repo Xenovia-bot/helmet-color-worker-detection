@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety Vision</title>
+    <style>
+        :root {
+            --bg: #07111f;
+            --bg-soft: #0d1b2f;
+            --panel: #f7ecdc;
+            --panel-strong: #fffaf3;
+            --line: #d6c2a8;
+            --text: #493628;
+            --muted: #7e6752;
+            --accent: #b9824d;
+            --accent-strong: #98653a;
+            --accent-soft: #f1dfc8;
+            --success: #587a52;
+            --warning: #c28943;
+            --danger: #b75f4d;
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.26);
+            --radius-xl: 30px;
+            --radius-lg: 22px;
+            --radius-md: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(87, 208, 255, 0.14), transparent 28%),
+                radial-gradient(circle at top right, rgba(126, 240, 199, 0.10), transparent 24%),
+                radial-gradient(circle at bottom, rgba(255, 184, 77, 0.08), transparent 30%),
+                linear-gradient(160deg, #06101b 0%, #091728 48%, #0f2641 100%);
+            padding: 24px;
+        }
+
+        .shell {
+            width: min(980px, 100%);
+            margin: 0 auto;
+        }
+
+        .hero {
+            padding: 32px;
+            border-radius: var(--radius-xl);
+            background: rgba(255, 249, 240, 0.95);
+            border: 1px solid rgba(140, 102, 66, 0.16);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent-strong);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            line-height: 0.98;
+            letter-spacing: -0.04em;
+            margin-bottom: 14px;
+        }
+
+        .hero p {
+            max-width: 620px;
+            margin: 0 auto;
+            color: var(--muted);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .upload-card {
+            margin-top: 22px;
+            padding: 28px;
+            border-radius: var(--radius-xl);
+            background: rgba(255, 253, 249, 0.95);
+            border: 1px solid rgba(140, 102, 66, 0.16);
+            box-shadow: var(--shadow);
+        }
+
+        .mode-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            border: 1px solid var(--line);
+            background: #fbf4ea;
+            color: var(--muted);
+            border-radius: 14px;
+            padding: 13px 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .mode-btn.active {
+            color: #fffaf3;
+            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+            border-color: transparent;
+        }
+
+        .dropzone {
+            padding: 34px 24px;
+            border-radius: 26px;
+            border: 2px dashed #ccb395;
+            background: linear-gradient(180deg, #fffaf2 0%, #f8eedf 100%);
+            text-align: center;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .dropzone:hover,
+        .dropzone.dragover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 14px 32px rgba(167, 116, 66, 0.12);
+        }
+
+        .drop-icon {
+            width: 82px;
+            height: 82px;
+            margin: 0 auto 16px;
+            border-radius: 24px;
+            display: grid;
+            place-items: center;
+            font-size: 2.2rem;
+            background: #fff4e6;
+            color: var(--accent-strong);
+            border: 1px solid rgba(185, 130, 77, 0.2);
+        }
+
+        .dropzone h2 {
+            font-size: 1.35rem;
+            margin-bottom: 8px;
+        }
+
+        .dropzone p {
+            color: var(--muted);
+            line-height: 1.65;
+            max-width: 420px;
+            margin: 0 auto 16px;
+        }
+
+        .format-row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .chip {
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: #f2e3cf;
+            color: var(--accent-strong);
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 14px;
+            padding: 14px 18px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+            color: #fffaf3;
+        }
+
+        .btn-secondary {
+            background: #f7ecdc;
+            color: var(--text);
+            border: 1px solid var(--line);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-note {
+            margin-top: 16px;
+            text-align: center;
+            color: var(--muted);
+            min-height: 24px;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 11, 22, 0.62);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .overlay.show {
+            display: flex;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .modal {
+            width: min(1100px, 100%);
+            max-height: min(92vh, 920px);
+            overflow: auto;
+            border-radius: 30px;
+            background: var(--panel-strong);
+            border: 1px solid rgba(140, 102, 66, 0.18);
+            box-shadow: 0 30px 80px rgba(82, 57, 34, 0.22);
+            padding: 24px;
+        }
+
+        .modal-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .modal-top h3 {
+            font-size: 1.55rem;
+            margin-bottom: 6px;
+        }
+
+        .modal-top p {
+            color: var(--muted);
+        }
+
+        .close-btn {
+            border: 1px solid var(--line);
+            background: #faf1e5;
+            color: var(--text);
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px 18px;
+            border-radius: 20px;
+            background: #fbf4ea;
+            border: 1px solid rgba(140, 102, 66, 0.12);
+            margin-bottom: 16px;
+        }
+
+        .status-pill {
+            padding: 9px 13px;
+            border-radius: 999px;
+            font-size: 0.84rem;
+            font-weight: 800;
+        }
+
+        .status-pill.success {
+            color: var(--success);
+            background: rgba(88, 122, 82, 0.12);
+        }
+
+        .status-pill.warning {
+            color: var(--warning);
+            background: rgba(194, 137, 67, 0.14);
+        }
+
+        .status-pill.error {
+            color: var(--danger);
+            background: rgba(183, 95, 77, 0.14);
+        }
+
+        .loading,
+        .error-box {
+            display: none;
+            margin-bottom: 16px;
+            padding: 16px 18px;
+            border-radius: 18px;
+        }
+
+        .loading.show {
+            display: block;
+            background: #f8edde;
+            border: 1px solid rgba(185, 130, 77, 0.2);
+        }
+
+        .error-box.show {
+            display: block;
+            background: rgba(183, 95, 77, 0.1);
+            border: 1px solid rgba(183, 95, 77, 0.18);
+            color: #8a4338;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .metric {
+            padding: 18px;
+            border-radius: 20px;
+            background: #fbf5ec;
+            border: 1px solid rgba(140, 102, 66, 0.12);
+        }
+
+        .metric-label {
+            color: var(--muted);
+            font-size: 0.84rem;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 16px;
+        }
+
+        .card {
+            border-radius: 24px;
+            background: #fffbf5;
+            border: 1px solid rgba(140, 102, 66, 0.12);
+            overflow: hidden;
+        }
+
+        .card-head {
+            padding: 18px 18px 0;
+        }
+
+        .card-head h4 {
+            font-size: 1.02rem;
+            margin-bottom: 6px;
+        }
+
+        .card-head span {
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        .visual-stage {
+            position: relative;
+            margin: 18px;
+            min-height: 360px;
+            border-radius: 20px;
+            background: #f4e8d8;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+        }
+
+        .placeholder {
+            color: var(--muted);
+            text-align: center;
+            max-width: 360px;
+            line-height: 1.7;
+            padding: 24px;
+        }
+
+        .visual-stage img,
+        .visual-stage video,
+        .visual-stage canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .visual-stage img,
+        .visual-stage video {
+            display: none;
+        }
+
+        #imageCanvas {
+            display: none;
+            pointer-events: none;
+        }
+
+        .results-body {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 540px;
+            overflow: auto;
+        }
+
+        .result-item {
+            padding: 16px;
+            border-radius: 18px;
+            background: #f9f0e2;
+            border: 1px solid rgba(140, 102, 66, 0.12);
+        }
+
+        .result-item h5 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .result-item p {
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 0.92rem;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .tag {
+            padding: 7px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .tag.warning {
+            background: rgba(194, 137, 67, 0.14);
+            color: var(--warning);
+        }
+
+        .tag.safe {
+            background: rgba(88, 122, 82, 0.12);
+            color: var(--success);
+        }
+
+        .json-wrap {
+            margin-top: 16px;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(140, 102, 66, 0.12);
+        }
+
+        .json-wrap pre {
+            background: #f5ecdf;
+            color: #5d4734;
+            padding: 18px;
+            overflow: auto;
+            max-height: 260px;
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+            }
+
+            .hero,
+            .upload-card,
+            .modal {
+                padding: 18px;
+            }
+
+            .mode-row,
+            .action-row {
+                flex-direction: column;
+            }
+
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-top,
+            .status-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <section class="hero">
+            <div class="eyebrow">Safety Vision</div>
+            <h1>Resim veya video yukleyin, sonucu sade bir ekranda gorun.</h1>
+            <p>Ilk ekranda sadece yukleme alani var. Analiz bittiginde sonuc ayri bir pencere icinde acilir ve tum detaylar orada gosterilir.</p>
+        </section>
+
+        <section class="upload-card">
+            <div class="mode-row">
+                <button class="mode-btn active" id="imageModeBtn" type="button">Resim</button>
+                <button class="mode-btn" id="videoModeBtn" type="button">Video</button>
+            </div>
+
+            <div class="dropzone" id="dropzone">
+                <div class="drop-icon" id="dropIcon">🖼️</div>
+                <h2 id="dropTitle">Resim yukle</h2>
+                <p id="dropText">PNG, JPG veya WebP dosyanizi surukleyin ya da secin. Sonuc yeni bir pencerede acilacak.</p>
+                <div class="format-row" id="formatRow">
+                    <span class="chip">PNG</span>
+                    <span class="chip">JPG</span>
+                    <span class="chip">WEBP</span>
+                </div>
+                <div class="action-row">
+                    <button class="btn btn-primary" id="chooseBtn" type="button">Dosya Sec</button>
+                    <button class="btn btn-secondary" id="clearBtn" type="button">Temizle</button>
+                </div>
+            </div>
+
+            <input class="file-input" type="file" id="fileInput" accept="image/png,image/jpeg,image/webp">
+            <div class="file-note" id="fileNote">Hazir.</div>
+        </section>
+    </main>
+
+    <div class="overlay" id="resultOverlay">
+        <div class="modal">
+            <div class="modal-top">
+                <div>
+                    <h3>Analiz Sonucu</h3>
+                    <p id="modalSubtext">Secilen dosyanin tum sonucu burada.</p>
+                </div>
+                <button class="close-btn" id="closeOverlayBtn" type="button">Kapat</button>
+            </div>
+
+            <div class="status-bar">
+                <div>
+                    <strong id="statusTitle">Bekleniyor</strong>
+                    <div id="statusText">Analiz sonucu burada ozetlenecek.</div>
+                </div>
+                <div class="status-pill" id="statusPill">Hazir</div>
+            </div>
+
+            <div class="loading" id="loading">Dosya analiz ediliyor...</div>
+            <div class="error-box" id="errorBox"></div>
+
+            <div class="metrics">
+                <div class="metric">
+                    <div class="metric-label" id="metric1Label">Tespit</div>
+                    <div class="metric-value" id="metric1Value">0</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label" id="metric2Label">Ihlal</div>
+                    <div class="metric-value" id="metric2Value">0</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label" id="metric3Label">Sure</div>
+                    <div class="metric-value" id="metric3Value">0.00s</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label" id="metric4Label">Durum</div>
+                    <div class="metric-value" id="metric4Value">Hazir</div>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <article class="card">
+                    <div class="card-head">
+                        <h4>Onizleme</h4>
+                        <span id="stageMeta">Dosya secilmedi</span>
+                    </div>
+                    <div class="visual-stage">
+                        <div class="placeholder" id="placeholder">Dosya secildiginde onizleme burada acilir.</div>
+                        <img id="previewImage" alt="Gorsel onizleme">
+                        <video id="previewVideo" controls muted playsinline></video>
+                        <canvas id="imageCanvas"></canvas>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <div class="card-head">
+                        <h4>Ozet</h4>
+                        <span id="resultMeta">Detaylar burada listelenecek</span>
+                    </div>
+                    <div class="results-body" id="resultsBody">
+                        <div class="result-item">
+                            <p>Henuz sonuc yok.</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="json-wrap">
+                <pre id="jsonResponse">{
+  "status": "idle"
+}</pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8000";
+        const IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
+        const VIDEO_TYPES = ["video/mp4"];
+
+        let currentMode = "image";
+        let currentVideoFrames = [];
+
+        const imageModeBtn = document.getElementById("imageModeBtn");
+        const videoModeBtn = document.getElementById("videoModeBtn");
+        const dropzone = document.getElementById("dropzone");
+        const chooseBtn = document.getElementById("chooseBtn");
+        const clearBtn = document.getElementById("clearBtn");
+        const fileInput = document.getElementById("fileInput");
+        const fileNote = document.getElementById("fileNote");
+        const dropIcon = document.getElementById("dropIcon");
+        const dropTitle = document.getElementById("dropTitle");
+        const dropText = document.getElementById("dropText");
+        const formatRow = document.getElementById("formatRow");
+
+        const resultOverlay = document.getElementById("resultOverlay");
+        const closeOverlayBtn = document.getElementById("closeOverlayBtn");
+        const loading = document.getElementById("loading");
+        const errorBox = document.getElementById("errorBox");
+        const statusTitle = document.getElementById("statusTitle");
+        const statusText = document.getElementById("statusText");
+        const statusPill = document.getElementById("statusPill");
+        const modalSubtext = document.getElementById("modalSubtext");
+        const previewImage = document.getElementById("previewImage");
+        const previewVideo = document.getElementById("previewVideo");
+        const imageCanvas = document.getElementById("imageCanvas");
+        const placeholder = document.getElementById("placeholder");
+        const stageMeta = document.getElementById("stageMeta");
+        const resultMeta = document.getElementById("resultMeta");
+        const resultsBody = document.getElementById("resultsBody");
+        const jsonResponse = document.getElementById("jsonResponse");
+
+        const metric1Label = document.getElementById("metric1Label");
+        const metric1Value = document.getElementById("metric1Value");
+        const metric2Label = document.getElementById("metric2Label");
+        const metric2Value = document.getElementById("metric2Value");
+        const metric3Label = document.getElementById("metric3Label");
+        const metric3Value = document.getElementById("metric3Value");
+        const metric4Label = document.getElementById("metric4Label");
+        const metric4Value = document.getElementById("metric4Value");
+
+        function setMode(mode) {
+            currentMode = mode;
+            const isImage = mode === "image";
+
+            imageModeBtn.classList.toggle("active", isImage);
+            videoModeBtn.classList.toggle("active", !isImage);
+            fileInput.accept = isImage ? "image/png,image/jpeg,image/webp" : "video/mp4";
+
+            dropIcon.textContent = isImage ? "🖼️" : "🎬";
+            dropTitle.textContent = isImage ? "Resim yukle" : "Video yukle";
+            dropText.textContent = isImage
+                ? "PNG, JPG veya WebP dosyanizi surukleyin ya da secin. Sonuc yeni bir pencerede acilacak."
+                : "MP4 videonuzu surukleyin ya da secin. Sonuc yeni bir pencerede acilacak.";
+            formatRow.innerHTML = isImage
+                ? '<span class="chip">PNG</span><span class="chip">JPG</span><span class="chip">WEBP</span>'
+                : '<span class="chip">MP4</span><span class="chip">Video Analizi</span>';
+
+            clearState();
+        }
+
+        function clearState() {
+            fileInput.value = "";
+            fileNote.textContent = "Hazir.";
+            hideError();
+            hideLoading();
+            closeOverlay();
+            resetPreview();
+            resetMetrics();
+            jsonResponse.textContent = JSON.stringify({ status: "idle" }, null, 2);
+            resultsBody.innerHTML = '<div class="result-item"><p>Henuz sonuc yok.</p></div>';
+            resultMeta.textContent = "Detaylar burada listelenecek";
+            stageMeta.textContent = "Dosya secilmedi";
+            modalSubtext.textContent = "Secilen dosyanin tum sonucu burada.";
+            setStatus("Hazir", "Analiz sonucu burada ozetlenecek.", "Hazir", "");
+        }
+
+        function openOverlay() {
+            resultOverlay.classList.add("show");
+        }
+
+        function closeOverlay() {
+            resultOverlay.classList.remove("show");
+        }
+
+        function showLoading(message) {
+            loading.classList.add("show");
+            loading.textContent = message;
+        }
+
+        function hideLoading() {
+            loading.classList.remove("show");
+        }
+
+        function showError(message) {
+            errorBox.classList.add("show");
+            errorBox.textContent = message;
+        }
+
+        function hideError() {
+            errorBox.classList.remove("show");
+        }
+
+        function setStatus(title, text, pillText, pillClass) {
+            statusTitle.textContent = title;
+            statusText.textContent = text;
+            statusPill.textContent = pillText;
+            statusPill.className = `status-pill ${pillClass}`.trim();
+        }
+
+        function resetPreview() {
+            placeholder.style.display = "block";
+            previewImage.style.display = "none";
+            previewVideo.style.display = "none";
+            imageCanvas.style.display = "none";
+            imageCanvas.style.position = "";
+            imageCanvas.style.inset = "";
+            imageCanvas.style.width = "";
+            imageCanvas.style.height = "";
+            previewImage.removeAttribute("src");
+            previewVideo.removeAttribute("src");
+            previewVideo.load();
+            currentVideoFrames = [];
+        }
+
+        function resetMetrics() {
+            metric1Label.textContent = currentMode === "image" ? "Tespit" : "Frame";
+            metric1Value.textContent = "0";
+            metric2Label.textContent = "Ihlal";
+            metric2Value.textContent = "0";
+            metric3Label.textContent = "Sure";
+            metric3Value.textContent = "0.00s";
+            metric4Label.textContent = "Durum";
+            metric4Value.textContent = "Hazir";
+        }
+
+        function renderPreview(file) {
+            placeholder.style.display = "none";
+            if (currentMode === "image") {
+                previewVideo.style.display = "none";
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    previewImage.onload = () => {
+                        stageMeta.textContent = `${previewImage.naturalWidth}x${previewImage.naturalHeight}`;
+                    };
+                    previewImage.src = event.target.result;
+                    previewImage.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewImage.style.display = "none";
+                previewVideo.src = URL.createObjectURL(file);
+                previewVideo.style.display = "block";
+                stageMeta.textContent = "Video onizlemesi";
+                imageCanvas.style.display = "block";
+            }
+        }
+
+        function formatBytes(bytes) {
+            const units = ["B", "KB", "MB", "GB"];
+            let value = bytes;
+            let unit = 0;
+            while (value >= 1024 && unit < units.length - 1) {
+                value /= 1024;
+                unit += 1;
+            }
+            return `${value.toFixed(value >= 10 || unit === 0 ? 0 : 1)} ${units[unit]}`;
+        }
+
+        async function handleFile(file) {
+            const accepted = currentMode === "image" ? IMAGE_TYPES : VIDEO_TYPES;
+            if (!accepted.includes(file.type)) {
+                fileNote.textContent = currentMode === "image"
+                    ? "Gecersiz dosya. PNG, JPG veya WebP secin."
+                    : "Gecersiz dosya. MP4 secin.";
+                return;
+            }
+
+            fileNote.textContent = `${file.name} • ${formatBytes(file.size)}`;
+            openOverlay();
+            hideError();
+            resetMetrics();
+            renderPreview(file);
+            await uploadFile(file);
+        }
+
+        async function uploadFile(file) {
+            const endpoint = currentMode === "image" ? "/api/v1/process-image" : "/api/v1/process-video";
+            showLoading(currentMode === "image" ? "Resim analiz ediliyor..." : "Video analiz ediliyor...");
+            setStatus("Analiz suruyor", "Sunucu dosyayi isliyor.", "Bekleyin", "");
+            jsonResponse.textContent = JSON.stringify({ status: "loading" }, null, 2);
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.detail || `API Error: ${response.status}`);
+                }
+                jsonResponse.textContent = JSON.stringify(data, null, 2);
+                if (currentMode === "image") {
+                    displayImageResults(data);
+                } else {
+                    displayVideoResults(data);
+                }
+            } catch (error) {
+                showError(`Analiz hatasi: ${error.message}`);
+                setStatus("Hata", "Dosya islenemedi.", "Hata", "error");
+                metric4Value.textContent = "Hata";
+                resultMeta.textContent = "Analiz basarisiz";
+                resultsBody.innerHTML = '<div class="result-item"><p>Sunucuya erisilemedi veya dosya islenemedi.</p></div>';
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayImageResults(data) {
+            const results = data.results || { people_detected: 0, violations: [], detections: [], processing_time: 0 };
+            const allDetections = results.detections || [];
+            const violations = results.violations || [];
+
+            metric1Label.textContent = "Tespit";
+            metric1Value.textContent = allDetections.length;
+            metric2Label.textContent = "Ihlal";
+            metric2Value.textContent = violations.length;
+            metric3Value.textContent = `${Number(results.processing_time || 0).toFixed(2)}s`;
+            metric4Value.textContent = data.status === "success" ? "Guvenli" : data.status === "warning" ? "Uyari" : "Hata";
+
+            if (data.status === "error") {
+                setStatus("Hata", data.message || "Analiz sirasinda hata olustu.", "Hata", "error");
+            } else if (violations.length) {
+                setStatus("Dikkat gereken durum", `${violations.length} ihlal kaydi bulundu.`, "Uyari", "warning");
+            } else {
+                setStatus("Tamamlandi", `${allDetections.length} nesne tespit edildi.`, "Guvenli", "success");
+            }
+
+            resultMeta.textContent = `${allDetections.length} tespit, ${violations.length} ihlal`;
+
+            drawImageAnnotations(allDetections, violations);
+
+            let html = "";
+            allDetections.forEach((det) => {
+                html += `
+                    <div class="result-item">
+                        <h5>${det.class_name}</h5>
+                        <div class="tags">
+                            <span class="tag safe">${(det.confidence * 100).toFixed(1)}%</span>
+                        </div>
+                        <p>Kutu: [${det.bbox.map((v) => Number(v).toFixed(4)).join(", ")}]</p>
+                    </div>`;
+            });
+            violations.forEach((item) => {
+                html += `
+                    <div class="result-item">
+                        <h5>Kisi #${item.person_id} — Ihlal</h5>
+                        <div class="tags">
+                            ${item.missing_equipment.map((eq) => `<span class="tag warning">${eq}</span>`).join("")}
+                        </div>
+                        <p>Guven: ${(item.confidence * 100).toFixed(1)}% • Kutu: [${item.bbox.map((v) => Number(v).toFixed(4)).join(", ")}]</p>
+                    </div>`;
+            });
+            resultsBody.innerHTML = html || '<div class="result-item"><p>Hicbir nesne tespit edilmedi.</p></div>';
+        }
+
+        function displayVideoResults(data) {
+            const results = data.results || { frames_analyzed: 0, total_violations: 0, violation_frames: [], processing_time: 0 };
+            currentVideoFrames = results.violation_frames || [];
+
+            metric1Label.textContent = "Frame";
+            metric1Value.textContent = results.frames_analyzed;
+            metric2Label.textContent = "Ihlal";
+            metric2Value.textContent = results.total_violations;
+            metric3Value.textContent = `${Number(results.processing_time || 0).toFixed(2)}s`;
+            metric4Value.textContent = data.status === "success" ? "Guvenli" : data.status === "warning" ? "Uyari" : "Hata";
+
+            if (data.status === "error") {
+                setStatus("Hata", data.message || "Analiz sirasinda hata olustu.", "Hata", "error");
+            } else if (results.total_violations > 0) {
+                setStatus("Dikkat gereken durum", `${results.total_violations} ihlal kaydi bulundu.`, "Uyari", "warning");
+            } else {
+                setStatus("Tamamlandi", `${results.frames_analyzed} frame analiz edildi.`, "Guvenli", "success");
+            }
+
+            const totalDetections = currentVideoFrames.reduce((s, f) => s + (f.detections || []).length, 0);
+            resultMeta.textContent = `${currentVideoFrames.length} frame, ${totalDetections} tespit, ${results.total_violations} ihlal`;
+
+            syncVideoAnnotations();
+
+            resultsBody.innerHTML = currentVideoFrames.map((frame) => {
+                const dets = frame.detections || [];
+                const viols = frame.violations || [];
+                return `
+                    <div class="result-item">
+                        <h5>${Number(frame.timestamp_seconds).toFixed(2)}s • Frame #${frame.frame_index}</h5>
+                        <div class="tags">
+                            <span class="tag safe">${dets.length} tespit</span>
+                            ${viols.length ? `<span class="tag warning">${viols.length} ihlal</span>` : ""}
+                            <span class="tag safe">${frame.people_detected} kisi</span>
+                        </div>
+                        <p>${dets.map((d) => `${d.class_name} ${(d.confidence * 100).toFixed(0)}%`).join(" • ") || "Tespit yok"}</p>
+                    </div>`;
+            }).join("") || '<div class="result-item"><p>Hicbir frame analiz edilemedi.</p></div>';
+        }
+
+        function getActiveVideoFrame() {
+            if (!currentVideoFrames.length || previewVideo.style.display === "none") {
+                return null;
+            }
+
+            const current = previewVideo.currentTime || 0;
+            let nearest = null;
+            let minDiff = Infinity;
+
+            currentVideoFrames.forEach((frame) => {
+                const diff = Math.abs(Number(frame.timestamp_seconds) - current);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    nearest = frame;
+                }
+            });
+
+            return minDiff <= 0.6 ? nearest : null;
+        }
+
+        function detectionColor(className) {
+            const n = (className || "").toLowerCase();
+            if (n === "person")               return { stroke: "#4d79b7", fill: "rgba(77,121,183,0.10)" };
+            if (n.includes("helmet"))         return { stroke: "#587a52", fill: "rgba(88,122,82,0.10)" };
+            if (n === "vest")                 return { stroke: "#c28943", fill: "rgba(194,137,67,0.10)" };
+            return                                   { stroke: "#8e5bb5", fill: "rgba(142,91,181,0.10)" };
+        }
+
+        function drawBox(ctx, cx, cy, w, h, canvasW, canvasH, color, label, scale) {
+            const s = scale || 1;
+            const px = (cx - w / 2) * canvasW;
+            const py = (cy - h / 2) * canvasH;
+            const pw = w * canvasW;
+            const ph = h * canvasH;
+
+            const lw = Math.max(2, 2.5 * s);
+            const fontSize = Math.max(12, Math.round(14 * s));
+            const pad = Math.round(6 * s);
+            const labelH = fontSize + pad * 2;
+
+            ctx.font = `700 ${fontSize}px Segoe UI, sans-serif`;
+            const labelW = ctx.measureText(label).width + pad * 2;
+
+            ctx.strokeStyle = color.stroke;
+            ctx.lineWidth = lw;
+            ctx.fillStyle = color.fill;
+            ctx.beginPath();
+            ctx.roundRect(px, py, pw, ph, 6 * s);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = color.stroke;
+            ctx.beginPath();
+            ctx.roundRect(px, Math.max(py - labelH - 2, 0), labelW, labelH, 4 * s);
+            ctx.fill();
+
+            ctx.fillStyle = "#fff";
+            ctx.fillText(label, px + pad, Math.max(py - pad - 2, fontSize));
+        }
+
+        function syncVideoAnnotations() {
+            if (currentMode !== "video" || previewVideo.style.display === "none") {
+                return;
+            }
+
+            const vW = previewVideo.videoWidth;
+            const vH = previewVideo.videoHeight;
+            if (!vW || !vH) return;
+
+            imageCanvas.style.position = "absolute";
+            imageCanvas.style.inset = "0";
+            imageCanvas.style.width = "100%";
+            imageCanvas.style.height = "100%";
+            imageCanvas.style.display = "block";
+
+            const bW = imageCanvas.offsetWidth;
+            const bH = imageCanvas.offsetHeight;
+            if (!bW || !bH) return;
+
+            const dpr = window.devicePixelRatio;
+            imageCanvas.width = bW * dpr;
+            imageCanvas.height = bH * dpr;
+            const ctx = imageCanvas.getContext("2d");
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, bW, bH);
+
+            const activeFrame = getActiveVideoFrame();
+            if (!activeFrame) return;
+
+            const scale = Math.max(bW, bH) / 640;
+
+            (activeFrame.detections || []).forEach((det) => {
+                const [cx, cy, w, h] = det.bbox;
+                const color = detectionColor(det.class_name);
+                const label = `${det.class_name} ${(det.confidence * 100).toFixed(0)}%`;
+                drawBox(ctx, cx, cy, w, h, bW, bH, color, label, scale);
+            });
+
+            (activeFrame.violations || []).forEach((item) => {
+                const [cx, cy, w, h] = item.bbox;
+                const color = { stroke: "#b75f4d", fill: "rgba(183,95,77,0.12)" };
+                const label = `Kisi #${item.person_id} - ${item.missing_equipment.join(", ")}`;
+                drawBox(ctx, cx, cy, w, h, bW, bH, color, label, scale);
+            });
+
+            stageMeta.textContent = `${Number(activeFrame.timestamp_seconds).toFixed(2)}s anindaki tespitler gosteriliyor`;
+        }
+
+        function drawImageAnnotations(detections, violations) {
+            if (!previewImage.naturalWidth || !previewImage.naturalHeight) {
+                previewImage.addEventListener("load", function onLoad() {
+                    previewImage.removeEventListener("load", onLoad);
+                    drawImageAnnotations(detections, violations);
+                });
+                return;
+            }
+
+            const imgW = previewImage.naturalWidth;
+            const imgH = previewImage.naturalHeight;
+            const scale = Math.max(imgW, imgH) / 640;
+
+            previewImage.style.display = "none";
+            imageCanvas.style.position = "";
+            imageCanvas.width = imgW;
+            imageCanvas.height = imgH;
+            imageCanvas.style.display = "block";
+
+            const ctx = imageCanvas.getContext("2d");
+            ctx.drawImage(previewImage, 0, 0, imgW, imgH);
+
+            detections.forEach((det) => {
+                const [cx, cy, w, h] = det.bbox;
+                const color = detectionColor(det.class_name);
+                const label = `${det.class_name} ${(det.confidence * 100).toFixed(0)}%`;
+                drawBox(ctx, cx, cy, w, h, imgW, imgH, color, label, scale);
+            });
+
+            violations.forEach((item) => {
+                const [cx, cy, w, h] = item.bbox;
+                const color = { stroke: "#b75f4d", fill: "rgba(183,95,77,0.12)" };
+                const label = `Kisi #${item.person_id} - ${item.missing_equipment.join(", ")}`;
+                drawBox(ctx, cx, cy, w, h, imgW, imgH, color, label, scale);
+            });
+        }
+
+        dropzone.addEventListener("click", () => fileInput.click());
+        chooseBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            fileInput.click();
+        });
+        clearBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            clearState();
+        });
+
+        imageModeBtn.addEventListener("click", () => setMode("image"));
+        videoModeBtn.addEventListener("click", () => setMode("video"));
+
+        dropzone.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            dropzone.classList.add("dragover");
+        });
+
+        dropzone.addEventListener("dragleave", () => {
+            dropzone.classList.remove("dragover");
+        });
+
+        dropzone.addEventListener("drop", (event) => {
+            event.preventDefault();
+            dropzone.classList.remove("dragover");
+            const [file] = event.dataTransfer.files;
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        fileInput.addEventListener("change", (event) => {
+            const [file] = event.target.files;
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        closeOverlayBtn.addEventListener("click", closeOverlay);
+        resultOverlay.addEventListener("click", (event) => {
+            if (event.target === resultOverlay) {
+                closeOverlay();
+            }
+        });
+
+        previewVideo.addEventListener("loadedmetadata", syncVideoAnnotations);
+        previewVideo.addEventListener("timeupdate", syncVideoAnnotations);
+        previewVideo.addEventListener("seeked", syncVideoAnnotations);
+        previewVideo.addEventListener("play", syncVideoAnnotations);
+
+        window.addEventListener("resize", () => {
+            if (currentMode === "image" && imageCanvas.style.display !== "none") {
+                try {
+                    const parsed = JSON.parse(jsonResponse.textContent);
+                    if (parsed?.results) {
+                        drawImageAnnotations(parsed.results.detections || [], parsed.results.violations || []);
+                    }
+                } catch (error) {
+                    // Ignore parse issues during resize.
+                }
+            } else if (currentMode === "video") {
+                syncVideoAnnotations();
+            }
+        });
+
+        clearState();
+    </script>
+</body>
+</html>
